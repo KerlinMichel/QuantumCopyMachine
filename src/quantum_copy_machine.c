@@ -34,3 +34,21 @@ int nd_index(size_t num_dimensions, size_t index[], size_t dimension_sizes[])
 
     return index_;
 }
+
+struct neighbor_clause {
+    int n_0_state; // neighbor 0 state
+    int n_1_state; // neighbor 1 state
+    int index_offset; // neighbor_0_index + index_offset = neighbor_1_index
+};
+
+int *neighborhood(size_t **index_offsets, int num_index_offsets, int num_dimensions, size_t dimension_sizes[])
+{
+    int *neighborhood = (int*)malloc(num_index_offsets*sizeof(int));
+
+    for(int i = 0; i < num_index_offsets; i++)
+    {
+        neighborhood[i] = nd_index(num_dimensions, (size_t *)index_offsets[i],  dimension_sizes);
+    }
+
+    return neighborhood;
+}
