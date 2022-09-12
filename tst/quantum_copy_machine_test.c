@@ -2,6 +2,8 @@
 #include <stdio.h>
 
 #include "quantum_copy_machine.h"
+#include "quantize.h"
+#include <png.h>
 
 void test2x2()
 {
