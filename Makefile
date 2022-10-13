@@ -15,7 +15,7 @@ static:
 	$(AR) rcs build/libqcm.a build/qcm.o
 
 test: static
-	$(CC) $(TST) -L build -lqcm -lpng -o ./build/test -I $(INCLUDE)
+	$(CC) ./tst/run_test.c -L build -lqcm -lpng -o ./build/test -I $(INCLUDE) 
 	./build/test
 
 clean:

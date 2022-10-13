@@ -1,6 +1,7 @@
 #include <ctype.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <png.h>
 
@@ -110,10 +111,11 @@ Image read_png_file(char *filename)
 
     png_destroy_read_struct(&png, &info, NULL);
 
-    Pixel **pixels = (Pixel **)malloc(height * sizeof(Pixel *));
-    for (int y = 0; y < height; y++)
+    Pixel **pixels = (Pixel **)malloc(width * sizeof(Pixel *));
+
+    for (int y = 0; y < width; y++)
     {
-        pixels[y] = malloc(width * sizeof(Pixel));
+        pixels[y] = malloc(height * sizeof(Pixel));
     }
 
     for (int y = 0; y < height; y++)

@@ -2,8 +2,6 @@
 #include <stdio.h>
 
 #include "quantum_copy_machine.h"
-#include "quantize.h"
-#include <png.h>
 
 void test2x2()
 {
@@ -46,8 +44,8 @@ void testNeighborhood2x2()
     assert(n[2] == 3);
 }
 
-int main(int argc, char *argv[]) {
-  test2x2();
-  testNeighborhood2x2();
-  return 0;
-}
+// int main(int argc, char *argv[]) {
+//   test2x2();
+//   testNeighborhood2x2();
+//   return 0;
+// }
