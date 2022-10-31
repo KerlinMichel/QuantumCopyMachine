@@ -113,9 +113,9 @@ Image read_png_file(char *filename)
 
     Pixel **pixels = (Pixel **)malloc(width * sizeof(Pixel *));
 
-    for (int y = 0; y < width; y++)
+    for (int x = 0; x < width; x++)
     {
-        pixels[y] = malloc(height * sizeof(Pixel));
+        pixels[x] = malloc(height * sizeof(Pixel));
     }
 
     for (int y = 0; y < height; y++)
@@ -167,4 +167,90 @@ Image read_image(char *filename)
     {
         return read_png_file(filename);
     }
+}
+
+Image* partition_image(Image image, int image_part_width, int image_part_height)
+{
+    int num_partition_rows = image.width / image_part_width;
+    int num_partition_cols = image.height / image_part_height;
+
+    int num_partitions = num_partition_rows * num_partition_cols;
+
+    Image paritions[num_partitions];
+
+    int partition_index = 0;
+    for (int r = 0; r < num_partition_rows; r++)
+    {
+        for (int c = 0; c < num_partition_cols; c++)
+        {
+            // create parition pixels
+            Pixel **pixels = (Pixel **)malloc(image_part_width * sizeof(Pixel *));
+
+            for (int x = 0; x < image_part_width; x++)
+            {
+                // allocate memory
+                pixels[x] = malloc(image_part_height * sizeof(Pixel));
+
+                for (int y = 0; y < image_part_height; y++)
+                {
+
+                    // copy over pixels from original image to parition pixel
+                    pixels[x][y] = image.pixels[(r * image_part_width) + x][(c * image_part_height) + y];
+
+                    // create image and store in partitions
+                    Image img = {.width = image_part_width, .height = image_part_height, .pixels = pixels};
+                    paritions[partition_index] = img;
+                }
+            }
+            partition_index++;
+        }
+    }
+
+    Image *p = (Image *) paritions;
+
+    return p;
+}
+
+void save_image(char *filename, Image image)
+{
+    FILE *fp = fopen(filename, "wb");
+
+    png_structp png = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+    png_infop info = png_create_info_struct(png);
+
+    png_init_io(png, fp);
+
+    png_bytep *row_pointers = NULL;
+
+    row_pointers = (png_bytep *)malloc(sizeof(png_bytep) * image.height);
+
+    int pixel_size = 3;
+    png_set_IHDR(png,
+                 info,
+                 image.width,
+                 image.height,
+                 8,
+                 PNG_COLOR_TYPE_RGB,
+                 PNG_INTERLACE_NONE,
+                 PNG_COMPRESSION_TYPE_DEFAULT,
+                 PNG_FILTER_TYPE_DEFAULT);
+
+    png_byte color_type = png_get_color_type(png, info);
+
+    row_pointers = png_malloc(png, image.height * sizeof (png_byte *));
+    for (int y = 0; y < image.height; y++) {
+        png_byte *row = png_malloc(png, sizeof (uint8_t) * image.width * pixel_size);
+        row_pointers[y] = row;
+        for (int x = 0; x < image.width; x++) {
+            Pixel pixel = image.pixels[x][y];
+            *row++ = pixel.red;
+            *row++ = pixel.green;
+            *row++ = pixel.blue;
+        }
+    }
+
+    png_set_rows(png, info, row_pointers);
+    png_write_png(png, info, PNG_TRANSFORM_IDENTITY, NULL);
+    png_destroy_write_struct(&png, &info);
+    fclose(fp);
 }
